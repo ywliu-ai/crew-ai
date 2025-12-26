@@ -42,7 +42,7 @@ class CustomLLM(BaseLLM):
                 "Content-Type": "application/json",
             },
             json=payload,
-            timeout=30,
+            timeout=300,
         )
         response.raise_for_status()
 

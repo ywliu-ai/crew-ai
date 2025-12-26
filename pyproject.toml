@@ -8,4 +8,9 @@ dependencies = [
     "crewai[tools]>=1.7.2",
     "ipykernel>=7.1.0",
     "langchain>=1.2.0",
+    "mysql-connector-python>=8.0.0",
+    "networkx>=3.6.1",
+    "pandas>=2.3.3",
+    "pymysql>=1.1.2",
+    "xlrd>=2.0.2",
 ]
