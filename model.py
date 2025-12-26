@@ -1,6 +1,15 @@
 from crewai import BaseLLM
 from typing import Any, Dict, List, Optional, Union
+import httpx
+import asyncio
 import requests
+import time
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
+from crewai.task import Task
+from crewai.agent.core import Agent
+from crewai.tools.base_tool import BaseTool
+from crewai.utilities.types import LLMMessage
 
 class CustomLLM(BaseLLM):
     def __init__(
@@ -8,11 +17,16 @@ class CustomLLM(BaseLLM):
         model: str,
         api_key: str,
         endpoint: str,
-        temperature: Optional[float] = None,
+        temperature: float | None = None,
+        timeout: int = 120,
+        max_retries: int = 3,
+        **kwargs: Any,
     ):
-        super().__init__(model=model, temperature=temperature)
+        super().__init__(model=model, temperature=temperature, **kwargs)
         self.api_key = api_key
         self.endpoint = endpoint
+        self.timeout = timeout
+        self.max_retries = max_retries
 
     def call(
         self,
@@ -54,3 +68,15 @@ class CustomLLM(BaseLLM):
 
     def get_context_window_size(self) -> int:
         return 8192
+
+    async def acall(self, messages, **kwargs):
+        if isinstance(messages, str):
+            messages = [{"role": "user", "content": messages}]
+        payload = {"model": self.model, "messages": messages, "temperature": self.temperature}
+        async with httpx.AsyncClient(timeout=self.timeout) as client:
+            resp = await client.post(self.endpoint, headers={
+                "Authorization": f"Bearer {self.api_key}",
+                "Content-Type": "application/json"
+            }, json=payload)
+            resp.raise_for_status()
+            return resp.json()["choices"][0]["message"]["content"]
