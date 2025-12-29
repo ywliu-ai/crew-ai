@@ -149,7 +149,7 @@ class Correlation_analysisTool(BaseTool):
             #print(f"[edr]读取 深信服edr {file_path_sangfor} 不存在")
             pass
         else:
-            df: DataFrame = pd.read_excel(
+            df = pd.read_excel(
                 file_path_sangfor,
             )
             for row in df.itertuples():
@@ -166,7 +166,7 @@ class Correlation_analysisTool(BaseTool):
         file_path_CWPP = os.path.join(base_dir, './EDR/深信服CWPP.xls')
 
         if os.path.exists(file_path_sangfor):
-            df1: DataFrame = pd.read_excel(file_path_CWPP, header=13)
+            df1 = pd.read_excel(file_path_CWPP, header=13)
             for row2 in df1.itertuples():
                 ip_addr = row2[2]
                 # print(f" {ip_addr} - {type(ip_addr)}")
@@ -181,7 +181,7 @@ class Correlation_analysisTool(BaseTool):
         # 读取 安全狗云眼
         file_path_anquangou =  os.path.join(base_dir, './EDR/安全狗云眼.xlsx')
         if os.path.exists(file_path_sangfor):
-            df2: DataFrame = pd.read_excel(file_path_anquangou, header=0)
+            df2 = pd.read_excel(file_path_anquangou, header=0)
             for row3 in df2.itertuples():
                 # 使用属性直接获取
                 ip_row = row3.外网IP
