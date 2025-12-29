@@ -22,7 +22,7 @@ class LogRetrievalTool(BaseTool):
     description: str = "基于输入告警的源IP和目的IP进行查询，然后把查询到告警的内容返回"
     args_schema: Type[BaseModel] = LogRetrievalToolInput
 
-    def format_to_markdown(data_list):
+    def _format_to_markdown(self, data_list):
         """将字典列表格式化为Markdown表格"""
 
         # 获取表头
@@ -108,7 +108,7 @@ class LogRetrievalTool(BaseTool):
                         format_list.append(entry)
 
                     if len(format_list) > 0:
-                        md_list_str = self.format_to_markdown(format_list)
+                        md_list_str = self._format_to_markdown(format_list)
 
                         return   "## 二、全维度告警关联\n**告警日志关联**\n" + md_list_str
 
@@ -368,7 +368,7 @@ class Correlation_analysisTool(BaseTool):
         df['group_id'] = df['cluster'].replace(cluster_to_group)  
         return df 
 
-    def is_valid_ipv4(ip: str) -> bool:
+    def is_valid_ipv4(self, ip: str) -> bool:
         """验证IPv4地址格式"""
         pattern = r'^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$'
         return re.match(pattern, ip) is not None
