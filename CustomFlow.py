@@ -83,6 +83,26 @@ class AlertReportFlow(Flow[AlertReportState]):
         # 同时直接更新 state 和返回字典，确保状态更新
         self.state.analysis = combined_analysis
         return {"analysis": combined_analysis}
+    
+    @listen(LogSummary)
+    def CorrelationAnalysis(self) -> Dict[str, Any]:
+        llm = self.state.get_llm()
+        # 调试：检查 LogSummary 是否已经更新了 state.analysis
+        print(f"Debug: state.analysis before CorrelationAnalysis: {self.state.analysis}")
+        CorrelationAnalysisCrew = Correlation_analysis(llm, self.state.data.get("srcip",""))
+        result = CorrelationAnalysisCrew.kickoff()
+
+        # 确保从 state 中读取最新的 analysis 值
+        previous_analysis = self.state.analysis or ""
+        print(f"Debug: previous_analysis = {previous_analysis}")
+        # 确保 result 是字符串类型
+        result_str = str(result) if result else ""
+        combined_analysis = f"{previous_analysis}\n\n{result_str}" if previous_analysis else result_str
+        print(f"Debug: combined_analysis length = {len(combined_analysis) if combined_analysis else 0}")
+        
+        # 同时直接更新 state 和返回字典，确保状态更新
+        self.state.analysis = combined_analysis
+        return {"analysis": combined_analysis}
    
 
 
